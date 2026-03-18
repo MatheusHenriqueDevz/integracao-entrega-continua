@@ -25,24 +25,24 @@ jobs:
     - name: Executar o testes
       run: java test_app
 
-    steps:
     - name: Gerar artefato ZIP
-      run: zip -r pipelin-demo.zip *.class
+      run: zip -r pipeline-demo.zip *.class
 
-      -name: Publicar artefato
+    - name: Publicar artefato
       uses: actions/upload-artifact@v4
       with:
         name: codigo-buildado
         path: pipeline-demo.zip
+
   deploy:
     needs: build
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    enviroment:
+    environment:
       name: Production
     steps:
       - name: Baixar artefato
-        uses: actions/download-artifact@4
+        uses: actions/download-artifact@v4
         with:
           name: codigo-buildado
 
@@ -50,4 +50,4 @@ jobs:
         run: ls -la
 
       - name: Simular deploy
-        run: echo "Iniciando o deploy.... Deploy concluído com sucesso!" 
+        run: echo "Iniciando o deploy.... Deploy concluído com sucesso!"
