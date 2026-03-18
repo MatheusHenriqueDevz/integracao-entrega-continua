@@ -1,0 +1,53 @@
+name: CI Java
+
+on: 
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configurar o ambiente Java (JDK 21) 
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Compilar
+      run: javac app.java test_app.java
+    
+    - name: Executar o testes
+      run: java test_app
+
+    steps:
+    - name: Gerar artefato ZIP
+      run: zip -r pipelin-demo.zip *.class
+
+      -name: Publicar artefato
+      uses: actions/upload-artifact@v4
+      with:
+        name: codigo-buildado
+        path: pipeline-demo.zip
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    enviroment:
+      name: Production
+    steps:
+      - name: Baixar artefato
+        uses: actions/download-artifact@4
+        with:
+          name: codigo-buildado
+
+      - name: Descompactar artefato
+        run: ls -la
+
+      - name: Simular deploy
+        run: echo "Iniciando o deploy.... Deploy concluído com sucesso!" 
